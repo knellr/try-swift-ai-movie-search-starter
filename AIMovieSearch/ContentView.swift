@@ -6,7 +6,9 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-        
+    
+    @StateObject var searchModel: MovieSearchModel
+    
     var body: some View {
         NavigationStack {
             MovieItemsView()
@@ -19,7 +21,19 @@ struct ContentView: View {
                 .toolbarBackground(AppColors.navigationBarColorMac)
                 .toolbarColorScheme(.dark)
                 .toolbarBackground(.visible)
+                .navigationSubtitle(searchModel.state == .searching ? "Searching..." :  "")
 #endif
+                .searchable(text: $searchModel.searchText, prompt: "Search")
+                .onSubmit(of: .search) {
+                    Task { @MainActor in
+                        await searchModel.search()
+                    }
+                }
+                .overlay {
+                    if let searchResults = searchModel.searchResults {
+                        MovieSearchResultsView(searchResults: searchResults )
+                    }
+                }
         }
         
     }

@@ -28,8 +28,22 @@ actor CSVDataManager: ModelActor {
             let url = URL(fileURLWithPath: csvPath)
             let movieDataItems = try await decodeFileForURL(url)
             try await addMovieItemsModelContext(items: movieDataItems)
+            try await addMoviesEmbeddingsIndex()
         }
         catch {
+            runtimeIssue(error)
+        }
+    }
+  
+  private func addMoviesEmbeddingsIndex() async throws {
+      do {
+          let indexer = try MovieTextEmbeddingsIndexer(modelContainer: modelContainer)
+            try await indexer.indexAll()
+            // print out the new embeddings file location to see the file
+            // remove this in production
+            print("FILE INDEX: \(MovieTextEmbeddingsIndexer.indexURL)")
+        }
+          catch {
             runtimeIssue(error)
         }
     }

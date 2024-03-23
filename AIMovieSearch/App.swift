@@ -37,7 +37,7 @@ struct App: SwiftUI.App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(searchModel: MovieSearchModel(modelContainer: sharedModelContainer))
         }
         .modelContainer(sharedModelContainer)
     }
